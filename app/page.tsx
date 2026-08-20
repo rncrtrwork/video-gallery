@@ -1,0 +1,94 @@
+import Image from "next/image";
+import Link from "next/link";
+import { SiteFooter } from "@/components/public/site-footer";
+import { SiteHeader } from "@/components/public/site-header";
+import { VideoCard } from "@/components/public/video-card";
+import { cloudinaryImageUrl, cloudinaryPosterUrl } from "@/lib/cloudinary";
+import { categoryMap, getCategories, getPublishedVideos, getSettings, getVideoById } from "@/lib/repositories";
+
+export const dynamic = "force-dynamic";
+
+export default async function Home({ searchParams }: { searchParams: Promise<{ q?: string; category?: string; focus?: string; page?: string }> }) {
+  const params = await searchParams;
+  const page = Math.max(1, Math.min(1000, Number.parseInt(params.page || "1", 10) || 1));
+  const [settings, categories] = await Promise.all([
+    getSettings(),
+    getCategories(),
+  ]);
+  const [pageResults, selectedFeatured, fallbackFeatured] = await Promise.all([
+    getPublishedVideos({ query: params.q, categorySlug: params.category, offset: (page - 1) * 24, limit: 25 }),
+    settings.featuredVideoId ? getVideoById(settings.featuredVideoId.toHexString()) : Promise.resolve(null),
+    getPublishedVideos({ limit: 1 }),
+  ]);
+  const hasNext = pageResults.length > 24;
+  const videos = pageResults.slice(0, 24);
+  const categoriesById = categoryMap(categories);
+  const featured = selectedFeatured?.status === "published" ? selectedFeatured : fallbackFeatured[0];
+  const heroSrc = settings.heroImage?.publicId
+    ? cloudinaryImageUrl(settings.heroImage.publicId, 1400)
+    : featured?.cloudinary?.publicId
+      ? cloudinaryPosterUrl(featured.cloudinary.publicId, 1400)
+      : null;
+
+  return (
+    <>
+      <SiteHeader siteName={settings.siteName} />
+      <main id="top">
+        <section className="hero">
+          <div className="wrap hero-grid">
+            <div>
+              <div className="eyebrow">{settings.heroEyebrow}</div>
+              <h1>{settings.heroTitle}</h1>
+              <p>{settings.heroDescription}</p>
+              <Link className="btn" href={settings.heroButtonLink}>{settings.heroButtonLabel}</Link>
+            </div>
+            <div className="hero-card">
+              {heroSrc ? <Image src={heroSrc} alt={settings.heroImageAlt} width={1200} height={800} priority /> : <div className="hero-placeholder" />}
+              {featured && <div className="hero-overlay"><span>Featured</span><strong>{featured.title}</strong></div>}
+            </div>
+          </div>
+        </section>
+
+        <section className="wrap section" id="gallery">
+          <div className="section-head">
+            <div><div className="eyebrow">Latest uploads</div><h2>The Gallery</h2></div>
+            <form className="gallery-search" action="/" role="search">
+              {params.category && <input type="hidden" name="category" value={params.category} />}
+              <label className="sr-only" htmlFor="gallery-query">Search videos</label>
+              <input id="gallery-query" name="q" defaultValue={params.q} placeholder="Search videos…" autoFocus={params.focus === "search"} maxLength={80} />
+              <button className="ghost" type="submit">Search</button>
+            </form>
+          </div>
+          <div className="filters" aria-label="Filter by category">
+            <Link className={`filter ${!params.category ? "active" : ""}`} href={params.q ? `/?q=${encodeURIComponent(params.q)}#gallery` : "/#gallery"}>All</Link>
+            {categories.map((category) => (
+              <Link key={category._id?.toHexString()} className={`filter ${params.category === category.slug ? "active" : ""}`} href={`/?category=${category.slug}${params.q ? `&q=${encodeURIComponent(params.q)}` : ""}#gallery`}>
+                {category.name}
+              </Link>
+            ))}
+          </div>
+          {videos.length ? (
+            <><div className="video-grid">
+              {videos.map((video) => <VideoCard key={video._id?.toHexString()} video={video} category={video.categoryId ? categoriesById.get(video.categoryId.toHexString())?.name : undefined} />)}
+            </div><div className="pagination">{page > 1 && <Link className="ghost" href={`/?${new URLSearchParams({ ...(params.q ? { q: params.q } : {}), ...(params.category ? { category: params.category } : {}), page: String(page - 1) })}#gallery`}>← Previous</Link>}<span>Page {page}</span>{hasNext && <Link className="ghost" href={`/?${new URLSearchParams({ ...(params.q ? { q: params.q } : {}), ...(params.category ? { category: params.category } : {}), page: String(page + 1) })}#gallery`}>Next →</Link>}</div></>
+          ) : (
+            <div className="empty-state"><h3>No videos found</h3><p>Try another search or category.</p><Link href="/#gallery">Clear filters</Link></div>
+          )}
+        </section>
+
+        <section className="feature">
+          <div className="wrap feature-grid">
+            <div><div className="eyebrow">Built for the story</div><h2>Clear, focused viewing.</h2><p>Responsive playback, crisp imagery, and a gallery that stays out of the way of the work.</p></div>
+            <div className="stats-card"><div><div className="stat">Cloud</div><small>optimized delivery</small></div><div><div className="stat">Any screen</div><small>responsive playback</small></div></div>
+          </div>
+        </section>
+
+        <section className="wrap section about" id="about">
+          <div><div className="eyebrow">About</div><h2>{settings.aboutHeading}</h2></div>
+          <p>{settings.aboutBody}</p>
+        </section>
+      </main>
+      <SiteFooter siteName={settings.siteName} />
+    </>
+  );
+}

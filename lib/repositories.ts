@@ -1,0 +1,97 @@
+import "server-only";
+
+import { ObjectId, type Filter } from "mongodb";
+import { getDb } from "@/lib/db";
+import { escapeRegex } from "@/lib/security";
+import type { CategoryDocument, SiteSettingsDocument, VideoDocument } from "@/lib/types";
+
+export const DEFAULT_SETTINGS: SiteSettingsDocument = {
+  key: "main",
+  siteName: "FrameVault",
+  heroEyebrow: "Curated video library",
+  heroTitle: "Watch. Discover. Return anytime.",
+  heroDescription: "A considered collection of films, stories, and conversations.",
+  heroButtonLabel: "Browse videos",
+  heroButtonLink: "/#gallery",
+  heroImageAlt: "Featured video production",
+  aboutHeading: "A simple home for remarkable stories.",
+  aboutBody: "Explore a growing collection of films, documentaries, nature studies, and conversations.",
+  updatedAt: new Date(0),
+};
+
+export async function getSettings() {
+  const db = await getDb();
+  return (await db.collection<SiteSettingsDocument>("siteSettings").findOne({ key: "main" })) ?? DEFAULT_SETTINGS;
+}
+
+export async function getCategories(includeInactive = false) {
+  const db = await getDb();
+  const filter = includeInactive ? {} : { isActive: true };
+  return db.collection<CategoryDocument>("categories").find(filter).sort({ sortOrder: 1, name: 1 }).toArray();
+}
+
+export async function getPublishedVideos(options: { query?: string; categorySlug?: string; limit?: number; page?: number; offset?: number } = {}) {
+  const db = await getDb();
+  const filter: Filter<VideoDocument> = { status: "published" };
+  if (options.query?.trim()) {
+    const term = new RegExp(escapeRegex(options.query.trim().slice(0, 80)), "i");
+    filter.$or = [{ title: term }, { shortDescription: term }, { tags: term }];
+  }
+  if (options.categorySlug) {
+    const category = await db.collection<CategoryDocument>("categories").findOne({ slug: options.categorySlug, isActive: true });
+    if (!category?._id) return [];
+    filter.categoryId = category._id;
+  }
+  return db
+    .collection<VideoDocument>("videos")
+    .find(filter)
+    .sort({ featured: -1, sortOrder: 1, publishedAt: -1 })
+    .skip(options.offset ?? Math.max(0, (options.page ?? 1) - 1) * Math.min(options.limit ?? 24, 48))
+    .limit(Math.min(options.limit ?? 24, 48))
+    .toArray();
+}
+
+export async function getVideoBySlug(slug: string) {
+  const db = await getDb();
+  return db.collection<VideoDocument>("videos").findOne({ slug, status: "published" });
+}
+
+export async function getVideoById(id: string) {
+  if (!ObjectId.isValid(id)) return null;
+  const db = await getDb();
+  return db.collection<VideoDocument>("videos").findOne({ _id: new ObjectId(id) });
+}
+
+export async function getAllVideos() {
+  const db = await getDb();
+  return db.collection<VideoDocument>("videos").find().sort({ updatedAt: -1 }).toArray();
+}
+
+export async function getPublishedVideoIndex() {
+  const db = await getDb();
+  return db.collection<VideoDocument>("videos").find(
+    { status: "published" },
+    { projection: { slug: 1, updatedAt: 1 } },
+  ).sort({ publishedAt: -1 }).limit(5_000).toArray();
+}
+
+export async function uniqueSlug(title: string, preferred: string, excludeId?: string) {
+  const { slugify } = await import("@/lib/validation");
+  const db = await getDb();
+  const base = slugify(preferred || title) || `video-${Date.now()}`;
+  let slug = base;
+  let suffix = 2;
+  while (
+    await db.collection<VideoDocument>("videos").findOne({
+      slug,
+      ...(excludeId && ObjectId.isValid(excludeId) ? { _id: { $ne: new ObjectId(excludeId) } } : {}),
+    })
+  ) {
+    slug = `${base}-${suffix++}`;
+  }
+  return slug;
+}
+
+export function categoryMap(categories: CategoryDocument[]) {
+  return new Map(categories.filter((item) => item._id).map((item) => [item._id!.toHexString(), item]));
+}
