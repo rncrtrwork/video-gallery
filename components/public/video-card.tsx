@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import { cloudinaryImageUrl, cloudinaryPosterUrl } from "@/lib/cloudinary";
 import type { VideoDocument } from "@/lib/types";
+import { storageUrl } from "@/lib/storage";
 
 function duration(value?: number) {
   if (!value) return null;
@@ -16,13 +16,12 @@ function cardDescription(value: string) {
 }
 
 export function VideoCard({ video, category }: { video: VideoDocument; category?: string }) {
-  const posterId = video.poster?.publicId ?? video.cloudinary?.publicId;
-  const posterSrc = video.poster?.secureUrl || (video.poster?.publicId ? cloudinaryImageUrl(video.poster.publicId, 900) : video.cloudinary?.publicId ? cloudinaryPosterUrl(video.cloudinary.publicId, 900) : null);
+  const posterSrc = video.poster?.key ? storageUrl(video.poster.key) : null;
   return (
     <article className="video-card">
       <Link href={`/videos/${video.slug}`} aria-label={`Watch ${video.title}`}>
         <div className="thumb">
-          {posterId && posterSrc ? (
+          {posterSrc ? (
             <Image src={posterSrc} alt="" fill sizes="(max-width: 650px) 100vw, (max-width: 900px) 50vw, 33vw" />
           ) : <div className="poster-placeholder" aria-hidden="true" />}
           <span className="play" aria-hidden="true">▶</span>

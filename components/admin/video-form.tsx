@@ -1,9 +1,10 @@
 import type { CategoryDocument, VideoDocument } from "@/lib/types";
-import { CloudinaryUpload } from "./cloudinary-upload";
+import { BackblazeUpload } from "./backblaze-upload";
 import { saveVideoAction } from "@/app/admin/actions";
+import { storageUrl } from "@/lib/storage";
 
-function assetJson(asset?: VideoDocument["cloudinary"] | VideoDocument["poster"]) {
-  return asset ? JSON.stringify(asset) : "";
+function assetJson(asset?: VideoDocument["videoAsset"] | VideoDocument["poster"]) {
+  return asset ? JSON.stringify({ ...asset, url: storageUrl(asset.key) }) : "";
 }
 
 export function VideoForm({ video, categories }: { video?: VideoDocument; categories: CategoryDocument[] }) {
@@ -17,8 +18,8 @@ export function VideoForm({ video, categories }: { video?: VideoDocument; catego
         <div className="form-group"><label htmlFor="tags">Tags</label><input className="form-control" id="tags" name="tags" defaultValue={video?.tags.join(", ")} placeholder="film, interview, coast" /><small>Comma-separated.</small></div>
         <div className="form-group"><label htmlFor="sortOrder">Sort order</label><input className="form-control" id="sortOrder" name="sortOrder" type="number" min="0" defaultValue={video?.sortOrder ?? 0} /></div>
         <div className="form-group full"><label className="checkbox"><input name="featured" type="checkbox" defaultChecked={video?.featured} /> Feature this video</label></div>
-        <div className="form-group full"><CloudinaryUpload kind="video" inputName="assetJson" initialJson={assetJson(video?.cloudinary)} label={video?.cloudinary ? "Replace video file" : "Upload video file"} /></div>
-        <div className="form-group full"><CloudinaryUpload kind="image" inputName="posterJson" initialJson={assetJson(video?.poster)} label="Optional custom poster" /></div>
+        <div className="form-group full"><BackblazeUpload kind="video" inputName="assetJson" initialJson={assetJson(video?.videoAsset)} label={video?.videoAsset ? "Replace video file" : "Upload video file"} /></div>
+        <div className="form-group full"><BackblazeUpload kind="image" inputName="posterJson" initialJson={assetJson(video?.poster)} label="Poster image" /></div>
       </div>
       <div className="form-actions"><button className="btn" type="submit">Save draft</button><span className="subtle">The video is saved as a draft and must be reviewed before publication.</span></div>
     </form>

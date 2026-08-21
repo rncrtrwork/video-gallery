@@ -4,8 +4,8 @@ import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
-import { parseCloudinaryAsset } from "@/lib/cloudinary";
 import { getDb } from "@/lib/db";
+import { parseStorageAsset, storedAssetExists } from "@/lib/storage";
 import type { SiteSettingsDocument, VideoDocument, VideoStatus } from "@/lib/types";
 import { categoryInputSchema, objectIdString, parseFormData, siteSettingsInputSchema, slugify, videoInputSchema } from "@/lib/validation";
 import { uniqueSlug } from "@/lib/repositories";
@@ -38,8 +38,12 @@ export async function saveVideoAction(formData: FormData) {
   const now = new Date();
   const id = input.id && ObjectId.isValid(input.id) ? new ObjectId(input.id) : undefined;
   const existing = id ? await db.collection<VideoDocument>("videos").findOne({ _id: id }) : null;
-  const cloudinary = parseCloudinaryAsset(input.assetJson) ?? existing?.cloudinary ?? null;
-  const poster = parseCloudinaryAsset(input.posterJson) ?? existing?.poster ?? null;
+  const submittedVideo = parseStorageAsset(input.assetJson, "video");
+  const submittedPoster = parseStorageAsset(input.posterJson, "image");
+  if ((input.assetJson && !submittedVideo) || (input.posterJson && !submittedPoster)) redirect(`/admin/videos${input.id ? `/${input.id}/edit` : "/new"}?error=validation`);
+  if ((submittedVideo && !(await storedAssetExists(submittedVideo))) || (submittedPoster && !(await storedAssetExists(submittedPoster)))) redirect(`/admin/videos${input.id ? `/${input.id}/edit` : "/new"}?error=media-required`);
+  const videoAsset = submittedVideo ?? existing?.videoAsset ?? null;
+  const poster = submittedPoster ?? existing?.poster ?? null;
   const categoryId = input.categoryId && ObjectId.isValid(input.categoryId) ? new ObjectId(input.categoryId) : null;
   const slug = existing?.slug ?? await uniqueSlug(input.title, slugify(input.title), input.id);
   const update = {
@@ -50,7 +54,7 @@ export async function saveVideoAction(formData: FormData) {
     tags: input.tags.split(",").map((tag) => tag.trim()).filter(Boolean).slice(0, 20),
     sortOrder: input.sortOrder,
     featured: input.featured,
-    cloudinary,
+    videoAsset,
     poster,
     media: input.assetJson ? uploadedMedia(input.assetJson) : existing?.media,
     updatedAt: now,
@@ -88,7 +92,7 @@ export async function setVideoStatusAction(formData: FormData) {
   const id = new ObjectId(idResult.data);
   const video = await db.collection<VideoDocument>("videos").findOne({ _id: id });
   if (!video) throw new Error("Video not found");
-  if (status === "published" && !video.cloudinary?.publicId) redirect(`/admin/videos/${idResult.data}/edit?error=media-required`);
+  if (status === "published" && !video.videoAsset?.key) redirect(`/admin/videos/${idResult.data}/edit?error=media-required`);
   await db.collection<VideoDocument>("videos").updateOne({ _id: id }, { $set: { status: nextStatus, publishedAt: nextStatus === "published" ? video.publishedAt ?? new Date() : video.publishedAt, updatedAt: new Date(), updatedBy: new ObjectId(session.userId) } });
   await audit(session.userId, `video.${status}`, "video", id);
   revalidatePath("/");
@@ -103,7 +107,9 @@ export async function saveSettingsAction(formData: FormData) {
   if (!parsed.success) redirect("/admin/content?error=validation");
   const db = await getDb();
   const existing = await db.collection<SiteSettingsDocument>("siteSettings").findOne({ key: "main" });
-  const heroImage = parseCloudinaryAsset(parsed.data.heroImageJson) ?? existing?.heroImage ?? null;
+  const submittedHeroImage = parseStorageAsset(parsed.data.heroImageJson, "image");
+  if (parsed.data.heroImageJson && (!submittedHeroImage || !(await storedAssetExists(submittedHeroImage)))) redirect("/admin/content?error=validation");
+  const heroImage = submittedHeroImage ?? existing?.heroImage ?? null;
   const featuredVideoId = parsed.data.featuredVideoId && ObjectId.isValid(parsed.data.featuredVideoId) ? new ObjectId(parsed.data.featuredVideoId) : null;
   const { heroImageJson: _ignored, ...fields } = parsed.data;
   await db.collection<SiteSettingsDocument>("siteSettings").updateOne({ key: "main" }, { $set: { ...fields, heroImage, featuredVideoId, updatedAt: new Date(), updatedBy: new ObjectId(session.userId) } }, { upsert: true });

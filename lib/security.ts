@@ -1,4 +1,4 @@
-import { createHash, createHmac, timingSafeEqual } from "node:crypto";
+import { createHmac, timingSafeEqual } from "node:crypto";
 import { getDb } from "@/lib/db";
 import { getServerEnv } from "@/lib/env";
 
@@ -20,13 +20,6 @@ export function assertSameOrigin(request: Request) {
 
 export function escapeRegex(value: string) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
-
-export function verifyCloudinaryWebhook(body: string, timestamp: string, signature: string, apiSecret: string, now = Date.now()) {
-  const timestampNumber = Number(timestamp);
-  if (!Number.isFinite(timestampNumber) || Math.abs(now / 1000 - timestampNumber) > 60 * 60 * 2) return false;
-  const expected = createHash("sha1").update(`${body}${timestamp}${apiSecret}`).digest("hex");
-  return safeEqual(signature, expected);
 }
 
 export async function consumeRateLimit(rawKey: string, limit: number, windowSeconds: number) {

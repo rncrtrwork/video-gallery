@@ -17,24 +17,28 @@ export function getServerEnv() {
   return result.data;
 }
 
-export function getCloudinaryEnv() {
-  if (process.env.CLOUDINARY_URL) {
-    const match = process.env.CLOUDINARY_URL.match(/^cloudinary:\/\/([^:]+):([^@]+)@(.+)$/);
-    if (!match) throw new Error("CLOUDINARY_URL is incomplete or malformed");
-    return { apiKey: match[1], apiSecret: match[2], cloudName: match[3] };
-  }
+const backblazeSchema = z.object({
+  B2_KEY_ID: z.string().min(1),
+  B2_APPLICATION_KEY: z.string().min(1),
+  B2_BUCKET_NAME: z.string().min(6),
+  B2_REGION: z.string().min(1),
+  B2_ENDPOINT: z.string().url(),
+  B2_PUBLIC_BASE_URL: z.string().url(),
+});
 
-  const result = z
-    .object({
-      CLOUDINARY_CLOUD_NAME: z.string().min(1),
-      CLOUDINARY_API_KEY: z.string().min(1),
-      CLOUDINARY_API_SECRET: z.string().min(1),
-    })
-    .safeParse(process.env);
-  if (!result.success) throw new Error("Cloudinary server environment is missing");
+export function getBackblazeEnv() {
+  const result = backblazeSchema.safeParse(process.env);
+  if (!result.success) {
+    throw new Error(
+      `Backblaze server environment is missing or invalid: ${result.error.issues.map((issue) => issue.path.join(".")).join(", ")}`,
+    );
+  }
   return {
-    cloudName: result.data.CLOUDINARY_CLOUD_NAME,
-    apiKey: result.data.CLOUDINARY_API_KEY,
-    apiSecret: result.data.CLOUDINARY_API_SECRET,
+    keyId: result.data.B2_KEY_ID,
+    applicationKey: result.data.B2_APPLICATION_KEY,
+    bucketName: result.data.B2_BUCKET_NAME,
+    region: result.data.B2_REGION,
+    endpoint: result.data.B2_ENDPOINT.replace(/\/$/, ""),
+    publicBaseUrl: result.data.B2_PUBLIC_BASE_URL.replace(/\/$/, ""),
   };
 }

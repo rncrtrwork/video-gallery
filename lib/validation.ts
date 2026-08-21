@@ -2,6 +2,13 @@ import { z } from "zod";
 
 export const objectIdString = z.string().regex(/^[a-f\d]{24}$/i, "Invalid identifier");
 
+export const storageAssetInputSchema = z.object({
+  key: z.string().min(1).max(500).regex(/^[a-zA-Z0-9/_\-.]+$/).refine((key) => !key.includes(".."), "Invalid storage key"),
+  contentType: z.string().min(1).max(100),
+  size: z.number().int().positive().max(1_000_000_000),
+  originalName: z.string().max(255).optional(),
+});
+
 export const videoInputSchema = z.object({
   id: z.string().optional(),
   title: z.string().trim().min(2).max(120),

@@ -1,7 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { categoryInputSchema, siteSettingsInputSchema, slugify, videoInputSchema } from "@/lib/validation";
-import { createHash } from "node:crypto";
-import { verifyCloudinaryWebhook } from "@/lib/security";
+import { categoryInputSchema, siteSettingsInputSchema, slugify, storageAssetInputSchema, videoInputSchema } from "@/lib/validation";
 
 describe("slugify", () => {
   it("creates safe stable URL segments", () => {
@@ -13,17 +11,13 @@ describe("slugify", () => {
   });
 });
 
-describe("Cloudinary webhook verification", () => {
-  it("accepts a current correctly signed raw payload", () => {
-    const timestamp = "1700000000";
-    const body = '{"public_id":"sample"}';
-    const secret = "test-secret";
-    const signature = createHash("sha1").update(`${body}${timestamp}${secret}`).digest("hex");
-    expect(verifyCloudinaryWebhook(body, timestamp, signature, secret, 1700000000 * 1000)).toBe(true);
+describe("Backblaze asset validation", () => {
+  it("accepts stored media metadata", () => {
+    expect(storageAssetInputSchema.safeParse({ key: "videos/example.mp4", contentType: "video/mp4", size: 1024 }).success).toBe(true);
   });
 
-  it("rejects stale webhook payloads", () => {
-    expect(verifyCloudinaryWebhook("{}", "1", "bad", "secret", 1700000000 * 1000)).toBe(false);
+  it("rejects unsafe storage keys", () => {
+    expect(storageAssetInputSchema.safeParse({ key: "videos/../secret", contentType: "video/mp4", size: 1024 }).success).toBe(false);
   });
 });
 

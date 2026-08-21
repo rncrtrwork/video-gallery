@@ -1,5 +1,7 @@
 # FrameVault Production Build Plan
 
+> Media provider update: the implemented application now uses Backblaze B2 with admin-authorized S3-compatible uploads. Cloudinary sections below describe the original architecture and are retained only as historical planning context.
+
 ## 1. Project outcome
 
 Build the static demo in `old/` into a production-ready video gallery that:

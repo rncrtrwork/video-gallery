@@ -5,8 +5,8 @@ import { SiteFooter } from "@/components/public/site-footer";
 import { SiteHeader } from "@/components/public/site-header";
 import { VideoCard } from "@/components/public/video-card";
 import { VideoPlayer } from "@/components/public/video-player";
-import { cloudinaryImageUrl, cloudinaryPosterUrl, cloudinaryVideoUrl } from "@/lib/cloudinary";
 import { categoryMap, getCategories, getPublishedVideos, getSettings, getVideoBySlug } from "@/lib/repositories";
+import { storageUrl } from "@/lib/storage";
 
 export const dynamic = "force-dynamic";
 
@@ -14,22 +14,22 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params;
   const video = await getVideoBySlug(slug);
   if (!video) return { title: "Video not found" };
-  const posterId = video.poster?.publicId ?? video.cloudinary?.publicId;
+  const posterUrl = video.poster?.key ? storageUrl(video.poster.key) : undefined;
   return {
     title: video.title,
     description: video.description,
     alternates: { canonical: `/videos/${video.slug}` },
-    openGraph: { type: "video.other", title: video.title, description: video.description, images: posterId ? [cloudinaryPosterUrl(posterId, 1200)] : [] },
+    openGraph: { type: "video.other", title: video.title, description: video.description, images: posterUrl ? [posterUrl] : [] },
   };
 }
 
 export default async function VideoPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const [video, settings, categories] = await Promise.all([getVideoBySlug(slug), getSettings(), getCategories()]);
-  if (!video?._id || !video.cloudinary?.publicId) notFound();
+  if (!video?._id || !video.videoAsset?.key) notFound();
   const related = (await getPublishedVideos({ limit: 4 })).filter((item) => !item._id?.equals(video._id)).slice(0, 3);
   const categoriesById = categoryMap(categories);
-  const posterUrl = video.poster?.secureUrl || (video.poster?.publicId ? cloudinaryImageUrl(video.poster.publicId, 1600) : cloudinaryPosterUrl(video.cloudinary.publicId, 1600));
+  const posterUrl = video.poster?.key ? storageUrl(video.poster.key) : undefined;
 
   return (
     <>
@@ -37,7 +37,7 @@ export default async function VideoPage({ params }: { params: Promise<{ slug: st
       <main>
         <section className="video-hero wrap">
           <Link className="back-link" href="/">← Back to gallery</Link>
-          <VideoPlayer videoId={video._id.toHexString()} src={cloudinaryVideoUrl(video.cloudinary.publicId)} poster={posterUrl} title={video.title} />
+          <VideoPlayer videoId={video._id.toHexString()} src={storageUrl(video.videoAsset.key)} poster={posterUrl} contentType={video.videoAsset.contentType} title={video.title} />
           <div className="video-copy">
             <div className="eyebrow">{video.categoryId ? categoriesById.get(video.categoryId.toHexString())?.name : "Video"}</div>
             <h1>{video.title}</h1>

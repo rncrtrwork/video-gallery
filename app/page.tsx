@@ -4,8 +4,8 @@ import { SiteFooter } from "@/components/public/site-footer";
 import { SiteHeader } from "@/components/public/site-header";
 import { GallerySearch } from "@/components/public/gallery-search";
 import { VideoCard } from "@/components/public/video-card";
-import { cloudinaryImageUrl, cloudinaryPosterUrl } from "@/lib/cloudinary";
 import { categoryMap, getCategories, getPublishedVideos, getSettings, getVideoById } from "@/lib/repositories";
+import { storageUrl } from "@/lib/storage";
 
 export const dynamic = "force-dynamic";
 
@@ -25,11 +25,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ q
   const videos = pageResults.slice(0, 24);
   const categoriesById = categoryMap(categories);
   const featured = selectedFeatured?.status === "published" ? selectedFeatured : fallbackFeatured[0];
-  const heroSrc = settings.heroImage?.publicId
-    ? cloudinaryImageUrl(settings.heroImage.publicId, 1400)
-    : featured?.cloudinary?.publicId
-      ? cloudinaryPosterUrl(featured.cloudinary.publicId, 1400)
-      : null;
+  const heroSrc = settings.heroImage?.key ? storageUrl(settings.heroImage.key) : featured?.poster?.key ? storageUrl(featured.poster.key) : null;
   const heroMedia = (
     <>
       {heroSrc ? <Image src={heroSrc} alt={settings.heroImageAlt} width={1200} height={800} priority /> : <div className="hero-placeholder" />}

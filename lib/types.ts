@@ -2,12 +2,11 @@ import type { ObjectId } from "mongodb";
 
 export type VideoStatus = "draft" | "processing" | "published" | "failed" | "archived";
 
-export interface CloudinaryAsset {
-  assetId: string;
-  publicId: string;
-  version?: number;
-  format?: string;
-  secureUrl?: string;
+export interface StorageAsset {
+  key: string;
+  contentType: string;
+  size: number;
+  originalName?: string;
 }
 
 export interface VideoDocument {
@@ -20,8 +19,8 @@ export interface VideoDocument {
   status: VideoStatus;
   featured: boolean;
   sortOrder: number;
-  cloudinary?: CloudinaryAsset | null;
-  poster?: CloudinaryAsset | null;
+  videoAsset?: StorageAsset | null;
+  poster?: StorageAsset | null;
   media?: {
     durationSeconds?: number;
     width?: number;
@@ -53,7 +52,7 @@ export interface SiteSettingsDocument {
   heroEyebrow: string;
   heroTitle: string;
   heroDescription: string;
-  heroImage?: CloudinaryAsset | null;
+  heroImage?: StorageAsset | null;
   heroImageAlt: string;
   aboutHeading: string;
   aboutBody: string;

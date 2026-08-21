@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 
-export function VideoPlayer({ videoId, src, poster, title }: { videoId: string; src: string; poster: string; title: string }) {
+export function VideoPlayer({ videoId, src, poster, contentType, title }: { videoId: string; src: string; poster?: string; contentType: string; title: string }) {
   const counted = useRef(false);
 
   async function countView() {
@@ -25,7 +25,7 @@ export function VideoPlayer({ videoId, src, poster, title }: { videoId: string; 
       onPlay={countView}
       aria-label={`Video player for ${title}`}
     >
-      <source src={src} type="video/mp4" />
+      <source src={src} type={contentType} />
       Your browser does not support HTML video.
     </video>
   );
