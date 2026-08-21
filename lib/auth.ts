@@ -68,9 +68,9 @@ export async function getSession(): Promise<AdminSession | null> {
   }
 }
 
-export async function requireAdmin() {
+export async function requireAdmin(loginPath = "/admin/login") {
   const session = await getSession();
-  if (!session) redirect("/admin/login");
+  if (!session) redirect(loginPath);
   return session;
 }
 

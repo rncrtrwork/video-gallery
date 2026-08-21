@@ -31,8 +31,9 @@ function uploadedMedia(value?: string) {
 
 export async function saveVideoAction(formData: FormData) {
   const session = await requireAdmin();
+  const isUserUpload = String(formData.get("returnTo") || "") === "/user";
   const parsed = videoInputSchema.safeParse(parseFormData(formData));
-  if (!parsed.success) redirect(`/admin/videos${String(formData.get("id") || "") ? `/${formData.get("id")}/edit` : "/new"}?error=validation`);
+  if (!parsed.success) redirect(isUserUpload ? "/user?error=validation" : `/admin/videos${String(formData.get("id") || "") ? `/${formData.get("id")}/edit` : "/new"}?error=validation`);
   const input = parsed.data;
   const db = await getDb();
   const now = new Date();
@@ -76,6 +77,7 @@ export async function saveVideoAction(formData: FormData) {
   await audit(session.userId, existing ? "video.updated" : "video.created", "video", savedId);
   revalidatePath("/");
   revalidatePath("/admin/videos");
+  if (isUserUpload) redirect("/user?success=uploaded");
   redirect(`/admin/videos/${savedId.toHexString()}/edit?success=saved`);
 }
 

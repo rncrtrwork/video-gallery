@@ -8,6 +8,7 @@ Production video gallery and small content-management system built with Next.js,
 - Stable, shareable video pages with Cloudinary playback
 - Anonymous, daily-deduplicated view counting without storing raw IP addresses
 - Protected owner/editor admin area
+- Protected `/user` upload page that saves user submissions as drafts for review
 - Draft, publish, unpublish, archive, restore, feature, and order video workflows
 - Direct signed Cloudinary video/image uploads (media does not pass through Next.js)
 - Editable banner, top description, featured video, About content, and categories
