@@ -5,13 +5,12 @@ import { loginAction } from "./actions";
 export const metadata = { title: "Admin sign in", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
 
-export default async function LoginPage({ searchParams }: { searchParams: Promise<{ error?: string; next?: string }> }) {
+export default async function LoginPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   if (await getSession()) redirect("/admin");
-  const { error, next } = await searchParams;
+  const { error } = await searchParams;
   return (
     <main className="login-page">
       <form className="login-card" action={loginAction}>
-        {next === "/user" && <input type="hidden" name="next" value="/user" />}
         <span className="brand">FRAME<span>VAULT</span></span>
         <div className="eyebrow">Private administration</div>
         <h1>Welcome back.</h1>

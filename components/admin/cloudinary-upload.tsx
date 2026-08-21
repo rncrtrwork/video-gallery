@@ -28,7 +28,7 @@ declare global {
   }
 }
 
-export function CloudinaryUpload({ kind, inputName, initialJson, label, publicUpload = false }: { kind: "video" | "image"; inputName: string; initialJson?: string; label: string; publicUpload?: boolean }) {
+export function CloudinaryUpload({ kind, inputName, initialJson, label }: { kind: "video" | "image"; inputName: string; initialJson?: string; label: string }) {
   const [config, setConfig] = useState<{ cloudName: string; apiKey: string } | null>(null);
   const [assetJson, setAssetJson] = useState(initialJson || "");
   const [status, setStatus] = useState(initialJson ? "Media attached" : "");
@@ -44,19 +44,15 @@ export function CloudinaryUpload({ kind, inputName, initialJson, label, publicUp
     : secureUrl || (config && publicId ? `https://res.cloudinary.com/${encodeURIComponent(config.cloudName)}/image/upload/f_auto,q_auto,w_720/${publicId}` : "");
 
   useEffect(() => {
-    const endpoint = publicUpload ? "/api/cloudinary/public-signature" : "/api/cloudinary/signature";
-    fetch(endpoint, { cache: "no-store" })
+    fetch("/api/cloudinary/signature", { cache: "no-store" })
       .then((response) => response.ok ? response.json() : Promise.reject(new Error("Upload configuration unavailable")))
       .then(setConfig)
       .catch((error: Error) => setStatus(error.message));
-  }, [publicUpload]);
+  }, []);
 
   function openWidget() {
     if (!config || !window.cloudinary) return;
-    const folder = publicUpload
-      ? kind === "video" ? "framevault/public-submissions" : "framevault/public-images"
-      : kind === "video" ? "framevault/videos" : "framevault/images";
-    const signatureEndpoint = publicUpload ? "/api/cloudinary/public-signature" : "/api/cloudinary/signature";
+    const folder = kind === "video" ? "framevault/videos" : "framevault/images";
     const widget = window.cloudinary.createUploadWidget(
       {
         cloudName: config.cloudName,
@@ -68,7 +64,7 @@ export function CloudinaryUpload({ kind, inputName, initialJson, label, publicUp
         clientAllowedFormats: kind === "video" ? ["mp4", "mov", "webm", "mkv"] : ["jpg", "jpeg", "png", "webp", "avif"],
         maxFileSize: kind === "video" ? 1_000_000_000 : 15_000_000,
         uploadSignature: async (callback: (signature: string) => void, paramsToSign: Record<string, string | number>) => {
-          const response = await fetch(signatureEndpoint, {
+          const response = await fetch("/api/cloudinary/signature", {
             method: "POST",
             headers: { "content-type": "application/json" },
             body: JSON.stringify({ paramsToSign, kind }),

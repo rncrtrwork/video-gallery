@@ -5,7 +5,6 @@ export const objectIdString = z.string().regex(/^[a-f\d]{24}$/i, "Invalid identi
 export const videoInputSchema = z.object({
   id: z.string().optional(),
   title: z.string().trim().min(2).max(120),
-  slug: z.string().trim().max(140).optional(),
   description: z.string().trim().min(5).max(5_000),
   categoryId: z.string().optional(),
   tags: z.string().max(500).default(""),

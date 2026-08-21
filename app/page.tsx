@@ -47,7 +47,6 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ q
               <div className="eyebrow">{settings.heroEyebrow}</div>
               <h1>{settings.heroTitle}</h1>
               <p>{settings.heroDescription}</p>
-              <Link className="btn" href="/user">Upload Video</Link>
             </div>
             {featured ? (
               <Link className="hero-card hero-card-link" href={`/videos/${featured.slug}`} aria-label={`Watch featured video: ${featured.title}`}>
