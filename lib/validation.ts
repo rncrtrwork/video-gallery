@@ -30,8 +30,6 @@ export const siteSettingsInputSchema = z.object({
   heroButtonLabel: z.string().trim().min(2).max(40),
   heroButtonLink: z.string().trim().regex(/^\/[a-zA-Z0-9_/?#=&-]*$/, "Use an internal path"),
   heroImageAlt: z.string().trim().min(2).max(180),
-  aboutHeading: z.string().trim().min(2).max(120),
-  aboutBody: z.string().trim().min(10).max(1_500),
   featuredVideoId: z.string().optional(),
   heroImageJson: z.string().max(10_000).optional(),
 });

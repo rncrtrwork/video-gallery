@@ -22,7 +22,6 @@ export default async function ContentPage({ searchParams }: { searchParams: Prom
           <div className="form-group full"><label htmlFor="heroImageAlt">Banner alternative text</label><input className="form-control" id="heroImageAlt" name="heroImageAlt" defaultValue={settings.heroImageAlt} required maxLength={180} /></div>
           <div className="form-group full"><label htmlFor="featuredVideoId">Featured video</label><select className="form-control" id="featuredVideoId" name="featuredVideoId" defaultValue={settings.featuredVideoId?.toHexString() || ""}><option value="">Choose automatically</option>{published.map((video) => <option key={video._id?.toHexString()} value={video._id?.toHexString()}>{video.title}</option>)}</select></div>
         </div></section>
-        <section className="admin-panel"><h2>About section</h2><div className="form-group"><label htmlFor="aboutHeading">Heading</label><input className="form-control" id="aboutHeading" name="aboutHeading" defaultValue={settings.aboutHeading} required maxLength={120} /></div><div className="form-group"><label htmlFor="aboutBody">Description</label><textarea className="form-control" id="aboutBody" name="aboutBody" defaultValue={settings.aboutBody} required minLength={10} maxLength={1500} /></div></section>
         <div className="form-actions"><button className="btn" type="submit">Save homepage</button><span className="subtle">Changes become public immediately.</span></div>
       </form>
     </>

@@ -76,17 +76,6 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ q
           )}
         </section>
 
-        <section className="feature">
-          <div className="wrap feature-grid">
-            <div><div className="eyebrow">Built for the story</div><h2>Clear, focused viewing.</h2><p>Responsive playback, crisp imagery, and a gallery that stays out of the way of the work.</p></div>
-            <div className="stats-card"><div><div className="stat">Cloud</div><small>optimized delivery</small></div><div><div className="stat">Any screen</div><small>responsive playback</small></div></div>
-          </div>
-        </section>
-
-        <section className="wrap section about" id="about">
-          <div><div className="eyebrow">About</div><h2>{settings.aboutHeading}</h2></div>
-          <p>{settings.aboutBody}</p>
-        </section>
       </main>
       <SiteFooter siteName={settings.siteName} />
     </>
