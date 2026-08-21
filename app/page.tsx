@@ -30,6 +30,12 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ q
     : featured?.cloudinary?.publicId
       ? cloudinaryPosterUrl(featured.cloudinary.publicId, 1400)
       : null;
+  const heroMedia = (
+    <>
+      {heroSrc ? <Image src={heroSrc} alt={settings.heroImageAlt} width={1200} height={800} priority /> : <div className="hero-placeholder" />}
+      {featured && <div className="hero-overlay"><span>Featured</span><strong>{featured.title}</strong></div>}
+    </>
+  );
 
   return (
     <>
@@ -43,10 +49,11 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ q
               <p>{settings.heroDescription}</p>
               <Link className="btn" href="/user">Upload Video</Link>
             </div>
-            <div className="hero-card">
-              {heroSrc ? <Image src={heroSrc} alt={settings.heroImageAlt} width={1200} height={800} priority /> : <div className="hero-placeholder" />}
-              {featured && <div className="hero-overlay"><span>Featured</span><strong>{featured.title}</strong></div>}
-            </div>
+            {featured ? (
+              <Link className="hero-card hero-card-link" href={`/videos/${featured.slug}`} aria-label={`Watch featured video: ${featured.title}`}>
+                {heroMedia}
+              </Link>
+            ) : <div className="hero-card">{heroMedia}</div>}
           </div>
         </section>
 
