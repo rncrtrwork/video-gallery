@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from "react";
 
-export function LocalDateTime({ value }: { value: string }) {
+export function LocalDateTime({ value, dateOnly = false }: { value: string; dateOnly?: boolean }) {
   const [formatted, setFormatted] = useState("");
 
   useEffect(() => {
-    setFormatted(new Date(value).toLocaleString());
-  }, [value]);
+    const date = new Date(value);
+    setFormatted(dateOnly ? date.toLocaleDateString() : date.toLocaleString());
+  }, [dateOnly, value]);
 
   return (
     <time dateTime={value}>
