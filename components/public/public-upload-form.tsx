@@ -1,6 +1,7 @@
 import { submitPublicVideoAction } from "@/app/user/actions";
 import type { CategoryDocument } from "@/lib/types";
 import { CloudinaryUpload } from "@/components/admin/cloudinary-upload";
+import { PublishButton } from "@/components/public/publish-button";
 
 export function PublicUploadForm({ categories }: { categories: CategoryDocument[] }) {
   return (
@@ -13,7 +14,7 @@ export function PublicUploadForm({ categories }: { categories: CategoryDocument[
         <input type="hidden" name="sortOrder" value="0" />
         <div className="form-group full"><CloudinaryUpload kind="video" inputName="assetJson" label="Upload video file" publicUpload /></div>
       </div>
-      <div className="form-actions"><button className="btn" type="submit">Publish Video</button><span className="subtle">Your video will be visible in the gallery immediately.</span></div>
+      <div className="form-actions"><PublishButton /><span className="subtle">Your video will be visible in the gallery immediately.</span></div>
     </form>
   );
 }

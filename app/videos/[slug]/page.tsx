@@ -36,7 +36,7 @@ export default async function VideoPage({ params }: { params: Promise<{ slug: st
       <SiteHeader siteName={settings.siteName} />
       <main>
         <section className="video-hero wrap">
-          <Link className="back-link" href="/#gallery">← Back to gallery</Link>
+          <Link className="back-link" href="/">← Back to gallery</Link>
           <VideoPlayer videoId={video._id.toHexString()} src={cloudinaryVideoUrl(video.cloudinary.publicId)} poster={posterUrl} title={video.title} />
           <div className="video-copy">
             <div className="eyebrow">{video.categoryId ? categoriesById.get(video.categoryId.toHexString())?.name : "Video"}</div>

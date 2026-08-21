@@ -22,7 +22,7 @@ declare global {
     cloudinary?: {
       createUploadWidget: (
         options: Record<string, unknown>,
-        callback: (error: { message?: string } | null, result: { event: string; info?: UploadResult }) => void,
+        callback: (error: { message?: string } | null, result?: { event: string; info?: UploadResult }) => void,
       ) => Widget;
     };
   }
@@ -32,6 +32,7 @@ export function CloudinaryUpload({ kind, inputName, initialJson, label, publicUp
   const [config, setConfig] = useState<{ cloudName: string; apiKey: string } | null>(null);
   const [assetJson, setAssetJson] = useState(initialJson || "");
   const [status, setStatus] = useState(initialJson ? "Media attached" : "");
+  const [uploading, setUploading] = useState(false);
 
   const asset = (() => {
     try { return JSON.parse(assetJson) as UploadResult; } catch { return null; }
@@ -78,25 +79,39 @@ export function CloudinaryUpload({ kind, inputName, initialJson, label, publicUp
         },
       },
       (error, result) => {
-        if (error) setStatus(error.message || "Upload failed");
+        if (error) {
+          setUploading(false);
+          setStatus(error.message || "Upload failed");
+          return;
+        }
+        if (!result) return;
+        if (result.event === "queues-start" || result.event === "upload-added") {
+          setUploading(true);
+          setStatus("Uploading to Cloudinary…");
+        }
         if (result.event === "success" && result.info) {
+          setUploading(false);
           setAssetJson(JSON.stringify(result.info));
           setStatus(`${result.info.public_id} uploaded successfully`);
           widget.destroy();
         }
+        if (result.event === "abort" || result.event === "close") setUploading(false);
       },
     );
     widget.open();
   }
 
   return (
-    <div className="upload-box">
+    <div className="upload-box" aria-busy={uploading}>
       <Script src="https://upload-widget.cloudinary.com/latest/global/all.js" strategy="lazyOnload" />
       <strong>{label}</strong>
       <p>{kind === "video" ? "MP4, MOV, WebM, or MKV. The file uploads directly to Cloudinary." : "JPG, PNG, WebP, or AVIF. Use a wide landscape image."}</p>
       {previewUrl && <img className="upload-preview" src={previewUrl} alt={`${label} preview`} />}
       <input type="hidden" name={inputName} value={assetJson} />
-      <button className="ghost" type="button" onClick={openWidget} disabled={!config}>Choose {kind}</button>
+      <button className="ghost upload-button" type="button" onClick={openWidget} disabled={!config || uploading}>
+        {uploading && <span className="spinner" aria-hidden="true" />}
+        {uploading ? "Uploading…" : `Choose ${kind}`}
+      </button>
       {status && <div className="upload-success" aria-live="polite">{status}</div>}
     </div>
   );

@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { SiteFooter } from "@/components/public/site-footer";
 import { SiteHeader } from "@/components/public/site-header";
+import { GallerySearch } from "@/components/public/gallery-search";
 import { VideoCard } from "@/components/public/video-card";
 import { cloudinaryImageUrl, cloudinaryPosterUrl } from "@/lib/cloudinary";
 import { categoryMap, getCategories, getPublishedVideos, getSettings, getVideoById } from "@/lib/repositories";
@@ -52,17 +53,12 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ q
         <section className="wrap section" id="gallery">
           <div className="section-head">
             <div><div className="eyebrow">Latest uploads</div><h2>The Gallery</h2></div>
-            <form className="gallery-search" action="/" role="search">
-              {params.category && <input type="hidden" name="category" value={params.category} />}
-              <label className="sr-only" htmlFor="gallery-query">Search videos</label>
-              <input id="gallery-query" name="q" defaultValue={params.q} placeholder="Search videos…" autoFocus={params.focus === "search"} maxLength={80} />
-              <button className="ghost" type="submit">Search</button>
-            </form>
+            <GallerySearch initialQuery={params.q} category={params.category} autoFocus={params.focus === "search"} />
           </div>
           <div className="filters" aria-label="Filter by category">
-            <Link className={`filter ${!params.category ? "active" : ""}`} href={params.q ? `/?q=${encodeURIComponent(params.q)}#gallery` : "/#gallery"}>All</Link>
+            <Link scroll={false} className={`filter ${!params.category ? "active" : ""}`} href={params.q ? `/?q=${encodeURIComponent(params.q)}` : "/"}>All</Link>
             {categories.map((category) => (
-              <Link key={category._id?.toHexString()} className={`filter ${params.category === category.slug ? "active" : ""}`} href={`/?category=${category.slug}${params.q ? `&q=${encodeURIComponent(params.q)}` : ""}#gallery`}>
+              <Link scroll={false} key={category._id?.toHexString()} className={`filter ${params.category === category.slug ? "active" : ""}`} href={`/?category=${category.slug}${params.q ? `&q=${encodeURIComponent(params.q)}` : ""}`}>
                 {category.name}
               </Link>
             ))}
@@ -70,9 +66,9 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ q
           {videos.length ? (
             <><div className="video-grid">
               {videos.map((video) => <VideoCard key={video._id?.toHexString()} video={video} category={video.categoryId ? categoriesById.get(video.categoryId.toHexString())?.name : undefined} />)}
-            </div><div className="pagination">{page > 1 && <Link className="ghost" href={`/?${new URLSearchParams({ ...(params.q ? { q: params.q } : {}), ...(params.category ? { category: params.category } : {}), page: String(page - 1) })}#gallery`}>← Previous</Link>}<span>Page {page}</span>{hasNext && <Link className="ghost" href={`/?${new URLSearchParams({ ...(params.q ? { q: params.q } : {}), ...(params.category ? { category: params.category } : {}), page: String(page + 1) })}#gallery`}>Next →</Link>}</div></>
+            </div><div className="pagination">{page > 1 && <Link scroll={false} className="ghost" href={`/?${new URLSearchParams({ ...(params.q ? { q: params.q } : {}), ...(params.category ? { category: params.category } : {}), page: String(page - 1) })}`}>← Previous</Link>}<span>Page {page}</span>{hasNext && <Link scroll={false} className="ghost" href={`/?${new URLSearchParams({ ...(params.q ? { q: params.q } : {}), ...(params.category ? { category: params.category } : {}), page: String(page + 1) })}`}>Next →</Link>}</div></>
           ) : (
-            <div className="empty-state"><h3>No videos found</h3><p>Try another search or category.</p><Link href="/#gallery">Clear filters</Link></div>
+            <div className="empty-state"><h3>No videos found</h3><p>Try another search or category.</p><Link scroll={false} href="/">Clear filters</Link></div>
           )}
         </section>
 
