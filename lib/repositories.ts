@@ -11,8 +11,6 @@ export const DEFAULT_SETTINGS: SiteSettingsDocument = {
   heroEyebrow: "Curated video library",
   heroTitle: "Watch. Discover. Return anytime.",
   heroDescription: "A considered collection of films, stories, and conversations.",
-  heroButtonLabel: "Upload Video",
-  heroButtonLink: "/user",
   heroImageAlt: "Featured video production",
   aboutHeading: "A simple home for remarkable stories.",
   aboutBody: "Explore a growing collection of films, documentaries, nature studies, and conversations.",
@@ -35,7 +33,7 @@ export async function getPublishedVideos(options: { query?: string; categorySlug
   const filter: Filter<VideoDocument> = { status: "published" };
   if (options.query?.trim()) {
     const term = new RegExp(escapeRegex(options.query.trim().slice(0, 80)), "i");
-    filter.$or = [{ title: term }, { shortDescription: term }, { tags: term }];
+    filter.$or = [{ title: term }, { description: term }, { tags: term }];
   }
   if (options.categorySlug) {
     const category = await db.collection<CategoryDocument>("categories").findOne({ slug: options.categorySlug, isActive: true });

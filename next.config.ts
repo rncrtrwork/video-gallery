@@ -1,5 +1,9 @@
 import type { NextConfig } from "next";
 
+const scriptSources = process.env.NODE_ENV === "development"
+  ? "'self' 'unsafe-inline' 'unsafe-eval' https://upload-widget.cloudinary.com"
+  : "'self' 'unsafe-inline' https://upload-widget.cloudinary.com";
+
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   experimental: {
@@ -23,7 +27,7 @@ const nextConfig: NextConfig = {
           { key: "X-Frame-Options", value: "DENY" },
           {
             key: "Content-Security-Policy",
-            value: "default-src 'self'; script-src 'self' 'unsafe-inline' https://upload-widget.cloudinary.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://res.cloudinary.com https://*.cloudinary.com; media-src 'self' blob: https://res.cloudinary.com https://*.cloudinary.com; connect-src 'self' https://api.cloudinary.com https://*.cloudinary.com; frame-src https://widget.cloudinary.com https://upload-widget.cloudinary.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests",
+            value: `default-src 'self'; script-src ${scriptSources}; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://res.cloudinary.com https://*.cloudinary.com; media-src 'self' blob: https://res.cloudinary.com https://*.cloudinary.com; connect-src 'self' https://api.cloudinary.com https://*.cloudinary.com; frame-src https://widget.cloudinary.com https://upload-widget.cloudinary.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests`,
           },
         ],
       },

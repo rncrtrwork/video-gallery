@@ -17,9 +17,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const posterId = video.poster?.publicId ?? video.cloudinary?.publicId;
   return {
     title: video.title,
-    description: video.shortDescription,
+    description: video.description,
     alternates: { canonical: `/videos/${video.slug}` },
-    openGraph: { type: "video.other", title: video.title, description: video.shortDescription, images: posterId ? [cloudinaryPosterUrl(posterId, 1200)] : [] },
+    openGraph: { type: "video.other", title: video.title, description: video.description, images: posterId ? [cloudinaryPosterUrl(posterId, 1200)] : [] },
   };
 }
 
@@ -41,7 +41,7 @@ export default async function VideoPage({ params }: { params: Promise<{ slug: st
           <div className="video-copy">
             <div className="eyebrow">{video.categoryId ? categoriesById.get(video.categoryId.toHexString())?.name : "Video"}</div>
             <h1>{video.title}</h1>
-            <p>{video.fullDescription}</p>
+            <p>{video.description}</p>
             <div className="player-meta"><span>{video.viewCount.toLocaleString()} views</span>{video.media?.durationSeconds && <span>{Math.ceil(video.media.durationSeconds / 60)} min</span>}</div>
           </div>
         </section>

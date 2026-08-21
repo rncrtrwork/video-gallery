@@ -10,6 +10,11 @@ function duration(value?: number) {
   return `${minutes}:${seconds.toString().padStart(2, "0")}`;
 }
 
+function cardDescription(value: string) {
+  const normalized = value.replace(/\s+/g, " ").trim();
+  return normalized.length > 150 ? `${normalized.slice(0, 147).trimEnd()}...` : normalized;
+}
+
 export function VideoCard({ video, category }: { video: VideoDocument; category?: string }) {
   const posterId = video.poster?.publicId ?? video.cloudinary?.publicId;
   const posterSrc = video.poster?.secureUrl || (video.poster?.publicId ? cloudinaryImageUrl(video.poster.publicId, 900) : video.cloudinary?.publicId ? cloudinaryPosterUrl(video.cloudinary.publicId, 900) : null);
@@ -26,7 +31,7 @@ export function VideoCard({ video, category }: { video: VideoDocument; category?
         <div className="card-body">
           <div className="eyebrow">{category || "Video"}</div>
           <h3>{video.title}</h3>
-          <p>{video.shortDescription}</p>
+          <p>{cardDescription(video.description)}</p>
           <div className="meta"><span>{video.viewCount.toLocaleString()} views</span><span>Cloud video</span></div>
         </div>
       </Link>

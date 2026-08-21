@@ -29,11 +29,11 @@ describe("Cloudinary webhook verification", () => {
 
 describe("content validation", () => {
   it("accepts a complete video draft", () => {
-    expect(videoInputSchema.safeParse({ title: "Morning Light", shortDescription: "A quiet observational film.", fullDescription: "A longer description of the complete film.", tags: "nature, morning", sortOrder: "2" }).success).toBe(true);
+    expect(videoInputSchema.safeParse({ title: "Morning Light", description: "A quiet observational film with a complete description.", tags: "nature, morning", sortOrder: "2" }).success).toBe(true);
   });
 
-  it("rejects external hero links", () => {
-    const result = siteSettingsInputSchema.safeParse({ siteName: "FrameVault", heroEyebrow: "Curated films", heroTitle: "Watch remarkable stories", heroDescription: "A sufficiently long introduction for visitors.", heroButtonLabel: "Browse films", heroButtonLink: "https://malicious.example", heroImageAlt: "A production set", aboutHeading: "About the gallery", aboutBody: "A sufficiently long description of the gallery." });
+  it("rejects incomplete hero descriptions", () => {
+    const result = siteSettingsInputSchema.safeParse({ siteName: "FrameVault", heroEyebrow: "Curated films", heroTitle: "Watch remarkable stories", heroDescription: "Short", heroImageAlt: "A production set" });
     expect(result.success).toBe(false);
   });
 

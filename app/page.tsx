@@ -40,7 +40,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ q
               <div className="eyebrow">{settings.heroEyebrow}</div>
               <h1>{settings.heroTitle}</h1>
               <p>{settings.heroDescription}</p>
-              <Link className="btn" href={settings.heroButtonLink}>{settings.heroButtonLabel}</Link>
+              <Link className="btn" href="/user">Upload Video</Link>
             </div>
             <div className="hero-card">
               {heroSrc ? <Image src={heroSrc} alt={settings.heroImageAlt} width={1200} height={800} priority /> : <div className="hero-placeholder" />}

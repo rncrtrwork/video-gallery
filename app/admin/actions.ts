@@ -46,8 +46,7 @@ export async function saveVideoAction(formData: FormData) {
   const update = {
     title: input.title,
     slug,
-    shortDescription: input.shortDescription,
-    fullDescription: input.fullDescription,
+    description: input.description,
     categoryId,
     tags: input.tags.split(",").map((tag) => tag.trim()).filter(Boolean).slice(0, 20),
     sortOrder: input.sortOrder,

@@ -14,8 +14,7 @@ export interface VideoDocument {
   _id?: ObjectId;
   title: string;
   slug: string;
-  shortDescription: string;
-  fullDescription: string;
+  description: string;
   categoryId?: ObjectId | null;
   tags: string[];
   status: VideoStatus;
@@ -54,8 +53,6 @@ export interface SiteSettingsDocument {
   heroEyebrow: string;
   heroTitle: string;
   heroDescription: string;
-  heroButtonLabel: string;
-  heroButtonLink: string;
   heroImage?: CloudinaryAsset | null;
   heroImageAlt: string;
   aboutHeading: string;
