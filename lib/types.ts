@@ -58,6 +58,7 @@ export interface SiteSettingsDocument {
   aboutHeading: string;
   aboutBody: string;
   featuredVideoId?: ObjectId | null;
+  showFeaturedOverlay?: boolean;
   updatedAt: Date;
   updatedBy?: ObjectId;
 }

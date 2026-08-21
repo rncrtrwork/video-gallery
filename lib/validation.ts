@@ -28,6 +28,7 @@ export const siteSettingsInputSchema = z.object({
   heroDescription: z.string().trim().min(10).max(500),
   heroImageAlt: z.string().trim().min(2).max(180),
   featuredVideoId: z.string().optional(),
+  showFeaturedOverlay: z.preprocess((value) => value === true || value === "true" || value === "on", z.boolean()),
   heroImageJson: z.string().max(10_000).optional(),
 });
 

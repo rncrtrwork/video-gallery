@@ -37,6 +37,12 @@ describe("content validation", () => {
     expect(result.success).toBe(false);
   });
 
+  it("parses the featured banner text checkbox", () => {
+    const settings = { siteName: "FrameVault", heroEyebrow: "Curated films", heroTitle: "Watch remarkable stories", heroDescription: "A complete homepage description.", heroImageAlt: "A production set" };
+    expect(siteSettingsInputSchema.parse({ ...settings, showFeaturedOverlay: "on" }).showFeaturedOverlay).toBe(true);
+    expect(siteSettingsInputSchema.parse(settings).showFeaturedOverlay).toBe(false);
+  });
+
   it("requires useful category names", () => {
     expect(categoryInputSchema.safeParse({ name: "A", sortOrder: 0 }).success).toBe(false);
   });

@@ -14,6 +14,7 @@ export const DEFAULT_SETTINGS: SiteSettingsDocument = {
   heroImageAlt: "Featured video production",
   aboutHeading: "A simple home for remarkable stories.",
   aboutBody: "Explore a growing collection of films, documentaries, nature studies, and conversations.",
+  showFeaturedOverlay: true,
   updatedAt: new Date(0),
 };
 
