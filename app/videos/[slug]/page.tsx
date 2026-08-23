@@ -37,13 +37,19 @@ export default async function VideoPage({ params }: { params: Promise<{ slug: st
       <main>
         <section className="video-hero wrap">
           <Link className="back-link" href="/">← Back to gallery</Link>
-          <VideoPlayer videoId={video._id.toHexString()} src={storageUrl(video.videoAsset.key)} poster={posterUrl} contentType={video.videoAsset.contentType} title={video.title} />
-          <div className="video-copy">
+          <VideoPlayer
+            videoId={video._id.toHexString()}
+            src={storageUrl(video.videoAsset.key)}
+            poster={posterUrl}
+            contentType={video.videoAsset.contentType}
+            title={video.title}
+            initialViewCount={video.viewCount}
+            durationSeconds={video.media?.durationSeconds}
+          >
             <div className="eyebrow">{video.categoryId ? categoriesById.get(video.categoryId.toHexString())?.name : "Video"}</div>
             <h1>{video.title}</h1>
             <p>{video.description}</p>
-            <div className="player-meta"><span>{video.viewCount.toLocaleString()} views</span>{video.media?.durationSeconds && <span>{Math.ceil(video.media.durationSeconds / 60)} min</span>}</div>
-          </div>
+          </VideoPlayer>
         </section>
         {related.length > 0 && <section className="wrap section"><div className="eyebrow">Continue watching</div><h2>More videos</h2><div className="video-grid">{related.map((item) => <VideoCard key={item._id?.toHexString()} video={item} category={item.categoryId ? categoriesById.get(item.categoryId.toHexString())?.name : undefined} />)}</div></section>}
       </main>
