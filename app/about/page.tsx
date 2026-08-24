@@ -33,7 +33,6 @@ export default async function AboutPage() {
       <main className="about-page">
         <div className="wrap about-page-grid">
           <article className="about-page-copy">
-            <div className="eyebrow">About</div>
             <h1>{settings.aboutPageLabel}</h1>
             {settings.aboutPageContent
               ? <div className="page-copy">{settings.aboutPageContent}</div>

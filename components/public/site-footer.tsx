@@ -13,7 +13,7 @@ export function SiteFooter({ siteName = "FrameVault", aboutPageLabel = "About", 
         <div className="brand">{siteName}</div>
         <nav className="footer-page-links" aria-label="Information pages">
           <Link href="/about">{aboutPageLabel}</Link>
-          <Link href="/privacy-policy">{privacyPolicyLabel}</Link>
+          {/* <Link href="/privacy-policy">{privacyPolicyLabel}</Link> */}
         </nav>
       </div>
     </footer>
