@@ -20,7 +20,7 @@ export default async function DashboardPage() {
         <div className="metric"><strong>{processing}</strong><span>Processing</span></div>
         <div className="metric"><strong>{failed}</strong><span>Failed</span></div>
       </div>
-      <section className="admin-panel"><h2>Quick actions</h2><div className="inline-actions"><Link className="ghost" href="/admin/content">Edit homepage</Link><Link className="ghost" href="/admin/categories">Manage categories</Link><Link className="ghost" href="/admin/videos">Review videos</Link></div></section>
+      <section className="admin-panel"><h2>Quick actions</h2><div className="inline-actions"><Link className="ghost" href="/admin/content">Edit site content</Link><Link className="ghost" href="/admin/categories">Manage categories</Link><Link className="ghost" href="/admin/videos">Review videos</Link></div></section>
       <section className="admin-panel"><h2>Recent activity</h2>{recent.length ? <table className="admin-table"><thead><tr><th>Action</th><th>Type</th><th>Time</th></tr></thead><tbody>{recent.map((item) => { const createdAt = new Date(item.createdAt as Date); return <tr key={item._id.toHexString()}><td>{String(item.action)}</td><td>{String(item.entityType)}</td><td><LocalDateTime value={createdAt.toISOString()} /></td></tr>; })}</tbody></table> : <p className="subtle">No changes yet.</p>}</section>
     </>
   );

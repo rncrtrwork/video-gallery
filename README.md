@@ -6,12 +6,12 @@ Production video gallery and small content-management system built with Next.js,
 
 - Server-rendered, responsive gallery with search and category filters
 - Stable, shareable video pages with Backblaze B2 playback
-- Anonymous, daily-deduplicated view counting without storing raw IP addresses
+- Playback view counting with request rate limiting
 - Protected owner/editor admin area
 - Admin-only video, poster, and banner uploads with short-lived Backblaze upload URLs
 - Draft, publish, unpublish, archive, restore, feature, and order video workflows
 - Direct signed Backblaze video/image uploads from the protected admin area (media does not pass through Next.js)
-- Editable banner, top description, featured video, About content, and categories
+- Editable banner, top description, featured video, legal pages, footer links, and categories
 - Audit trail, MongoDB indexes, environment validation, SEO metadata, sitemap, and health endpoint
 
 ## Requirements

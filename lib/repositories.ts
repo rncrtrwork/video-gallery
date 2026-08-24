@@ -15,12 +15,17 @@ export const DEFAULT_SETTINGS: SiteSettingsDocument = {
   aboutHeading: "A simple home for remarkable stories.",
   aboutBody: "Explore a growing collection of films, documentaries, nature studies, and conversations.",
   showFeaturedOverlay: true,
+  legalNoticeLabel: "Legal notice",
+  legalNoticeContent: "",
+  privacyPolicyLabel: "Privacy policy",
+  privacyPolicyContent: "",
   updatedAt: new Date(0),
 };
 
 export async function getSettings() {
   const db = await getDb();
-  return (await db.collection<SiteSettingsDocument>("siteSettings").findOne({ key: "main" })) ?? DEFAULT_SETTINGS;
+  const saved = await db.collection<SiteSettingsDocument>("siteSettings").findOne({ key: "main" });
+  return saved ? { ...DEFAULT_SETTINGS, ...saved } : DEFAULT_SETTINGS;
 }
 
 export async function getCategories(includeInactive = false) {

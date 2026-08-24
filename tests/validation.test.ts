@@ -37,6 +37,28 @@ describe("content validation", () => {
     expect(siteSettingsInputSchema.parse(settings).showFeaturedOverlay).toBe(false);
   });
 
+  it("accepts editable legal page names and plain-text content", () => {
+    const settings = {
+      siteName: "FrameVault",
+      heroEyebrow: "Curated films",
+      heroTitle: "Watch remarkable stories",
+      heroDescription: "A complete homepage description.",
+      heroImageAlt: "A production set",
+      legalNoticeLabel: "Imprint",
+      legalNoticeContent: "Responsible for this website:\nExample Owner",
+      privacyPolicyLabel: "Data protection",
+      privacyPolicyContent: "This page explains how personal data is handled.",
+    };
+    const result = siteSettingsInputSchema.parse(settings);
+    expect(result.legalNoticeLabel).toBe("Imprint");
+    expect(result.privacyPolicyContent).toContain("personal data");
+  });
+
+  it("limits legal page content length", () => {
+    const settings = { siteName: "FrameVault", heroEyebrow: "Curated films", heroTitle: "Watch remarkable stories", heroDescription: "A complete homepage description.", heroImageAlt: "A production set", legalNoticeContent: "x".repeat(50_001) };
+    expect(siteSettingsInputSchema.safeParse(settings).success).toBe(false);
+  });
+
   it("requires useful category names", () => {
     expect(categoryInputSchema.safeParse({ name: "A", sortOrder: 0 }).success).toBe(false);
   });

@@ -58,6 +58,10 @@ export interface SiteSettingsDocument {
   aboutBody: string;
   featuredVideoId?: ObjectId | null;
   showFeaturedOverlay?: boolean;
+  legalNoticeLabel: string;
+  legalNoticeContent: string;
+  privacyPolicyLabel: string;
+  privacyPolicyContent: string;
   updatedAt: Date;
   updatedBy?: ObjectId;
 }

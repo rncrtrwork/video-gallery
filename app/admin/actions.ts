@@ -115,6 +115,8 @@ export async function saveSettingsAction(formData: FormData) {
   await db.collection<SiteSettingsDocument>("siteSettings").updateOne({ key: "main" }, { $set: { ...fields, heroImage, featuredVideoId, updatedAt: new Date(), updatedBy: new ObjectId(session.userId) } }, { upsert: true });
   await audit(session.userId, "settings.updated", "siteSettings");
   revalidatePath("/");
+  revalidatePath("/legal-notice");
+  revalidatePath("/privacy-policy");
   redirect("/admin/content?success=saved");
 }
 

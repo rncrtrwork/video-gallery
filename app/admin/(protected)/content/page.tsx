@@ -8,8 +8,8 @@ export default async function ContentPage({ searchParams }: { searchParams: Prom
   const published = videos.filter((video) => video.status === "published");
   return (
     <>
-      <div className="admin-heading"><div><div className="eyebrow">Site content</div><h1>Homepage</h1></div></div>
-      {success && <div className="flash-success">Homepage content saved and public cache refreshed.</div>}
+      <div className="admin-heading"><div><div className="eyebrow">Site content</div><h1>Pages</h1></div></div>
+      {success && <div className="flash-success">Site content saved and public cache refreshed.</div>}
       {error && <div className="flash-error">Check all fields and try again.</div>}
       <form className="admin-form" action={saveSettingsAction}>
         <section className="admin-panel"><h2>Brand and hero</h2><div className="form-grid">
@@ -22,7 +22,13 @@ export default async function ContentPage({ searchParams }: { searchParams: Prom
           <div className="form-group full"><label htmlFor="featuredVideoId">Featured video</label><select className="form-control" id="featuredVideoId" name="featuredVideoId" defaultValue={settings.featuredVideoId?.toHexString() || ""}><option value="">Automatic — first video in gallery</option>{published.map((video) => <option key={video._id?.toHexString()} value={video._id?.toHexString()}>{video.title}</option>)}</select><small>Visitors open this video when they click the banner image. Automatic uses the first published video in gallery order.</small></div>
           <div className="form-group full"><label className="checkbox"><input name="showFeaturedOverlay" type="checkbox" defaultChecked={settings.showFeaturedOverlay !== false} /> Show featured text box on banner</label><small>Turn this off to show only the banner image. The banner remains linked to the featured video.</small></div>
         </div></section>
-        <div className="form-actions"><button className="btn" type="submit">Save homepage</button><span className="subtle">Changes become public immediately.</span></div>
+        <section className="admin-panel"><h2>Footer and legal pages</h2><p className="subtle">The page names become links in the public footer. Enter plain text; line breaks are preserved. Have the final legal wording reviewed by a qualified professional.</p><div className="form-grid legal-settings-grid">
+          <div className="form-group full"><label htmlFor="legalNoticeLabel">First page name</label><input className="form-control" id="legalNoticeLabel" name="legalNoticeLabel" defaultValue={settings.legalNoticeLabel} required minLength={2} maxLength={80} /><small>For example: Legal notice or Imprint.</small></div>
+          <div className="form-group full"><label htmlFor="legalNoticeContent">First page text</label><textarea className="form-control legal-content-input" id="legalNoticeContent" name="legalNoticeContent" defaultValue={settings.legalNoticeContent} maxLength={50000} /></div>
+          <div className="form-group full"><label htmlFor="privacyPolicyLabel">Second page name</label><input className="form-control" id="privacyPolicyLabel" name="privacyPolicyLabel" defaultValue={settings.privacyPolicyLabel} required minLength={2} maxLength={80} /><small>For example: Privacy policy.</small></div>
+          <div className="form-group full"><label htmlFor="privacyPolicyContent">Second page text</label><textarea className="form-control legal-content-input" id="privacyPolicyContent" name="privacyPolicyContent" defaultValue={settings.privacyPolicyContent} maxLength={50000} /></div>
+        </div></section>
+        <div className="form-actions"><button className="btn" type="submit">Save site content</button><span className="subtle">Changes become public immediately.</span></div>
       </form>
     </>
   );

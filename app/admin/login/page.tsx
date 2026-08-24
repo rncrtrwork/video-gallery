@@ -14,7 +14,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
         <span className="brand">FRAME<span>VAULT</span></span>
         <div className="eyebrow">Private administration</div>
         <h1>Welcome back.</h1>
-        <p className="subtle">Sign in to manage videos and homepage content.</p>
+        <p className="subtle">Sign in to manage videos and site content.</p>
         {error && <div className="flash-error" role="alert">{error === "rate" ? "Too many sign-in attempts. Wait 15 minutes and try again." : "The email or password is incorrect."}</div>}
         <div className="form-group"><label htmlFor="email">Email</label><input className="form-control" id="email" name="email" type="text" autoComplete="username" autoCapitalize="none" spellCheck={false} required /></div>
         <div className="form-group"><label htmlFor="password">Password</label><input className="form-control" id="password" name="password" type="password" autoComplete="current-password" minLength={8} required /></div>
