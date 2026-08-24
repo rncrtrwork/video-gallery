@@ -6,7 +6,7 @@ export const storageAssetInputSchema = z.object({
   key: z.string().min(1).max(500).regex(/^[a-zA-Z0-9/_\-.]+$/).refine((key) => !key.includes(".."), "Invalid storage key"),
   contentType: z.string().min(1).max(100),
   size: z.number().int().positive().max(1_000_000_000),
-  originalName: z.string().max(255).optional(),
+  originalName: z.string().max(255).nullish().transform((value) => value ?? undefined),
 });
 
 export const videoInputSchema = z.object({

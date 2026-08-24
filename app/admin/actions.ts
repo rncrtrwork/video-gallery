@@ -104,17 +104,24 @@ export async function setVideoStatusAction(formData: FormData) {
 export async function saveSettingsAction(formData: FormData) {
   const session = await requireAdmin();
   const parsed = siteSettingsInputSchema.safeParse(parseFormData(formData));
-  if (!parsed.success) redirect("/admin/content?error=validation");
+  if (!parsed.success) redirect("/admin/content?error=fields");
   const db = await getDb();
   const existing = await db.collection<SiteSettingsDocument>("siteSettings").findOne({ key: "main" });
   const submittedHeroImage = parseStorageAsset(parsed.data.heroImageJson, "image");
   const submittedAboutPageImage = parseStorageAsset(parsed.data.aboutPageImageJson, "image");
-  if (
-    (parsed.data.heroImageJson && (!submittedHeroImage || !(await storedAssetExists(submittedHeroImage))))
-    || (parsed.data.aboutPageImageJson && (!submittedAboutPageImage || !(await storedAssetExists(submittedAboutPageImage))))
-  ) redirect("/admin/content?error=validation");
-  const heroImage = submittedHeroImage ?? existing?.heroImage ?? null;
-  const aboutPageImage = submittedAboutPageImage ?? existing?.aboutPageImage ?? null;
+  if (parsed.data.heroImageJson && !submittedHeroImage) redirect("/admin/content?error=hero-image");
+  if (parsed.data.aboutPageImageJson && !submittedAboutPageImage) redirect("/admin/content?error=about-image");
+
+  let heroImage = existing?.heroImage ?? null;
+  if (submittedHeroImage && submittedHeroImage.key !== existing?.heroImage?.key) {
+    if (!(await storedAssetExists(submittedHeroImage))) redirect("/admin/content?error=hero-image");
+    heroImage = submittedHeroImage;
+  }
+  let aboutPageImage = existing?.aboutPageImage ?? null;
+  if (submittedAboutPageImage && submittedAboutPageImage.key !== existing?.aboutPageImage?.key) {
+    if (!(await storedAssetExists(submittedAboutPageImage))) redirect("/admin/content?error=about-image");
+    aboutPageImage = submittedAboutPageImage;
+  }
   const featuredVideoId = parsed.data.featuredVideoId && ObjectId.isValid(parsed.data.featuredVideoId) ? new ObjectId(parsed.data.featuredVideoId) : null;
   const { heroImageJson: _heroImageJson, aboutPageImageJson: _aboutPageImageJson, ...fields } = parsed.data;
   await db.collection<SiteSettingsDocument>("siteSettings").updateOne({ key: "main" }, { $set: { ...fields, heroImage, aboutPageImage, featuredVideoId, updatedAt: new Date(), updatedBy: new ObjectId(session.userId) } }, { upsert: true });

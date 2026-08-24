@@ -6,11 +6,16 @@ import { storageUrl } from "@/lib/storage";
 export default async function ContentPage({ searchParams }: { searchParams: Promise<{ success?: string; error?: string }> }) {
   const [{ success, error }, settings, videos] = await Promise.all([searchParams, getSettings(), getAllVideos()]);
   const published = videos.filter((video) => video.status === "published");
+  const errorMessage = error === "hero-image"
+    ? "The homepage banner could not be verified. Upload it again and retry."
+    : error === "about-image"
+      ? "The About page image could not be verified. Upload it again and retry."
+      : "Check all required fields and their length limits, then try again.";
   return (
     <>
       <div className="admin-heading"><div><div className="eyebrow">Site content</div><h1>Pages</h1></div></div>
       {success && <div className="flash-success">Site content saved and public cache refreshed.</div>}
-      {error && <div className="flash-error">Check all fields and try again.</div>}
+      {error && <div className="flash-error">{errorMessage}</div>}
       <form className="admin-form" action={saveSettingsAction}>
         <section className="admin-panel"><h2>Brand and hero</h2><div className="form-grid">
           <div className="form-group"><label htmlFor="siteName">Site name</label><input className="form-control" id="siteName" name="siteName" defaultValue={settings.siteName} required maxLength={60} /></div>

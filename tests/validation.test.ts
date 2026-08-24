@@ -16,6 +16,11 @@ describe("Backblaze asset validation", () => {
     expect(storageAssetInputSchema.safeParse({ key: "videos/example.mp4", contentType: "video/mp4", size: 1024 }).success).toBe(true);
   });
 
+  it("accepts legacy media with a null original name", () => {
+    const result = storageAssetInputSchema.parse({ key: "images/banner.jpg", contentType: "image/jpeg", size: 2048, originalName: null });
+    expect(result.originalName).toBeUndefined();
+  });
+
   it("rejects unsafe storage keys", () => {
     expect(storageAssetInputSchema.safeParse({ key: "videos/../secret", contentType: "video/mp4", size: 1024 }).success).toBe(false);
   });
