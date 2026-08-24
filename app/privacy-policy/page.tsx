@@ -20,16 +20,16 @@ export default async function PrivacyPolicyPage() {
   return (
     <>
       <SiteHeader siteName={settings.siteName} />
-      <main className="legal-page wrap">
+      <main className="content-page wrap">
         <article>
           <div className="eyebrow">Legal information</div>
           <h1>{settings.privacyPolicyLabel}</h1>
           {settings.privacyPolicyContent
-            ? <div className="legal-copy">{settings.privacyPolicyContent}</div>
-            : <p className="legal-empty">Content will be added by the site owner.</p>}
+            ? <div className="page-copy">{settings.privacyPolicyContent}</div>
+            : <p className="page-empty">Content will be added by the site owner.</p>}
         </article>
       </main>
-      <SiteFooter siteName={settings.siteName} legalNoticeLabel={settings.legalNoticeLabel} privacyPolicyLabel={settings.privacyPolicyLabel} />
+      <SiteFooter siteName={settings.siteName} aboutPageLabel={settings.aboutPageLabel} privacyPolicyLabel={settings.privacyPolicyLabel} />
     </>
   );
 }

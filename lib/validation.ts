@@ -36,8 +36,10 @@ export const siteSettingsInputSchema = z.object({
   featuredVideoId: z.string().optional(),
   showFeaturedOverlay: z.preprocess((value) => value === true || value === "true" || value === "on", z.boolean()),
   heroImageJson: z.string().max(10_000).optional(),
-  legalNoticeLabel: z.string().trim().min(2).max(80).default("Legal notice"),
-  legalNoticeContent: z.string().trim().max(50_000).default(""),
+  aboutPageLabel: z.string().trim().min(2).max(80).default("About"),
+  aboutPageContent: z.string().trim().max(50_000).default(""),
+  aboutPageImageAlt: z.string().trim().min(2).max(180).default("About page banner"),
+  aboutPageImageJson: z.string().max(10_000).optional(),
   privacyPolicyLabel: z.string().trim().min(2).max(80).default("Privacy policy"),
   privacyPolicyContent: z.string().trim().max(50_000).default(""),
 });

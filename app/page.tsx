@@ -75,7 +75,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ q
         </section>
 
       </main>
-      <SiteFooter siteName={settings.siteName} legalNoticeLabel={settings.legalNoticeLabel} privacyPolicyLabel={settings.privacyPolicyLabel} />
+      <SiteFooter siteName={settings.siteName} aboutPageLabel={settings.aboutPageLabel} privacyPolicyLabel={settings.privacyPolicyLabel} />
     </>
   );
 }

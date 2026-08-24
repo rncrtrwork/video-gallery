@@ -15,8 +15,9 @@ export const DEFAULT_SETTINGS: SiteSettingsDocument = {
   aboutHeading: "A simple home for remarkable stories.",
   aboutBody: "Explore a growing collection of films, documentaries, nature studies, and conversations.",
   showFeaturedOverlay: true,
-  legalNoticeLabel: "Legal notice",
-  legalNoticeContent: "",
+  aboutPageLabel: "About",
+  aboutPageContent: "",
+  aboutPageImageAlt: "About page banner",
   privacyPolicyLabel: "Privacy policy",
   privacyPolicyContent: "",
   updatedAt: new Date(0),
@@ -25,7 +26,14 @@ export const DEFAULT_SETTINGS: SiteSettingsDocument = {
 export async function getSettings() {
   const db = await getDb();
   const saved = await db.collection<SiteSettingsDocument>("siteSettings").findOne({ key: "main" });
-  return saved ? { ...DEFAULT_SETTINGS, ...saved } : DEFAULT_SETTINGS;
+  if (!saved) return DEFAULT_SETTINGS;
+  const legacy = saved as SiteSettingsDocument & { legalNoticeLabel?: string; legalNoticeContent?: string };
+  return {
+    ...DEFAULT_SETTINGS,
+    ...saved,
+    aboutPageLabel: saved.aboutPageLabel ?? legacy.legalNoticeLabel ?? DEFAULT_SETTINGS.aboutPageLabel,
+    aboutPageContent: saved.aboutPageContent ?? legacy.legalNoticeContent ?? DEFAULT_SETTINGS.aboutPageContent,
+  };
 }
 
 export async function getCategories(includeInactive = false) {

@@ -8,7 +8,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const videos = await getPublishedVideoIndex();
   return [
     { url: base, lastModified: new Date() },
-    { url: `${base}/legal-notice` },
+    { url: `${base}/about` },
     { url: `${base}/privacy-policy` },
     ...videos.map((video) => ({ url: `${base}/videos/${video.slug}`, lastModified: video.updatedAt })),
   ];

@@ -22,6 +22,9 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: publicMediaBase ? [{ protocol: "https", hostname: publicMediaBase.hostname, port: publicMediaBase.port }] : [],
   },
+  async redirects() {
+    return [{ source: "/legal-notice", destination: "/about", permanent: true }];
+  },
   async headers() {
     return [
       {

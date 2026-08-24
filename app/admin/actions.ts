@@ -108,14 +108,19 @@ export async function saveSettingsAction(formData: FormData) {
   const db = await getDb();
   const existing = await db.collection<SiteSettingsDocument>("siteSettings").findOne({ key: "main" });
   const submittedHeroImage = parseStorageAsset(parsed.data.heroImageJson, "image");
-  if (parsed.data.heroImageJson && (!submittedHeroImage || !(await storedAssetExists(submittedHeroImage)))) redirect("/admin/content?error=validation");
+  const submittedAboutPageImage = parseStorageAsset(parsed.data.aboutPageImageJson, "image");
+  if (
+    (parsed.data.heroImageJson && (!submittedHeroImage || !(await storedAssetExists(submittedHeroImage))))
+    || (parsed.data.aboutPageImageJson && (!submittedAboutPageImage || !(await storedAssetExists(submittedAboutPageImage))))
+  ) redirect("/admin/content?error=validation");
   const heroImage = submittedHeroImage ?? existing?.heroImage ?? null;
+  const aboutPageImage = submittedAboutPageImage ?? existing?.aboutPageImage ?? null;
   const featuredVideoId = parsed.data.featuredVideoId && ObjectId.isValid(parsed.data.featuredVideoId) ? new ObjectId(parsed.data.featuredVideoId) : null;
-  const { heroImageJson: _ignored, ...fields } = parsed.data;
-  await db.collection<SiteSettingsDocument>("siteSettings").updateOne({ key: "main" }, { $set: { ...fields, heroImage, featuredVideoId, updatedAt: new Date(), updatedBy: new ObjectId(session.userId) } }, { upsert: true });
+  const { heroImageJson: _heroImageJson, aboutPageImageJson: _aboutPageImageJson, ...fields } = parsed.data;
+  await db.collection<SiteSettingsDocument>("siteSettings").updateOne({ key: "main" }, { $set: { ...fields, heroImage, aboutPageImage, featuredVideoId, updatedAt: new Date(), updatedBy: new ObjectId(session.userId) } }, { upsert: true });
   await audit(session.userId, "settings.updated", "siteSettings");
   revalidatePath("/");
-  revalidatePath("/legal-notice");
+  revalidatePath("/about");
   revalidatePath("/privacy-policy");
   redirect("/admin/content?success=saved");
 }

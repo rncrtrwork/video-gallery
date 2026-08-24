@@ -37,25 +37,25 @@ describe("content validation", () => {
     expect(siteSettingsInputSchema.parse(settings).showFeaturedOverlay).toBe(false);
   });
 
-  it("accepts editable legal page names and plain-text content", () => {
+  it("accepts editable About and Privacy Policy page content", () => {
     const settings = {
       siteName: "FrameVault",
       heroEyebrow: "Curated films",
       heroTitle: "Watch remarkable stories",
       heroDescription: "A complete homepage description.",
       heroImageAlt: "A production set",
-      legalNoticeLabel: "Imprint",
-      legalNoticeContent: "Responsible for this website:\nExample Owner",
+      aboutPageLabel: "About the owner",
+      aboutPageContent: "Information about the person responsible for this website.",
       privacyPolicyLabel: "Data protection",
       privacyPolicyContent: "This page explains how personal data is handled.",
     };
     const result = siteSettingsInputSchema.parse(settings);
-    expect(result.legalNoticeLabel).toBe("Imprint");
+    expect(result.aboutPageLabel).toBe("About the owner");
     expect(result.privacyPolicyContent).toContain("personal data");
   });
 
-  it("limits legal page content length", () => {
-    const settings = { siteName: "FrameVault", heroEyebrow: "Curated films", heroTitle: "Watch remarkable stories", heroDescription: "A complete homepage description.", heroImageAlt: "A production set", legalNoticeContent: "x".repeat(50_001) };
+  it("limits information page content length", () => {
+    const settings = { siteName: "FrameVault", heroEyebrow: "Curated films", heroTitle: "Watch remarkable stories", heroDescription: "A complete homepage description.", heroImageAlt: "A production set", aboutPageContent: "x".repeat(50_001) };
     expect(siteSettingsInputSchema.safeParse(settings).success).toBe(false);
   });
 

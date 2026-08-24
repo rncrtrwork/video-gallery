@@ -53,7 +53,7 @@ export default async function VideoPage({ params }: { params: Promise<{ slug: st
         </section>
         {related.length > 0 && <section className="wrap section"><div className="eyebrow">Continue watching</div><h2>More videos</h2><div className="video-grid">{related.map((item) => <VideoCard key={item._id?.toHexString()} video={item} category={item.categoryId ? categoriesById.get(item.categoryId.toHexString())?.name : undefined} />)}</div></section>}
       </main>
-      <SiteFooter siteName={settings.siteName} legalNoticeLabel={settings.legalNoticeLabel} privacyPolicyLabel={settings.privacyPolicyLabel} />
+      <SiteFooter siteName={settings.siteName} aboutPageLabel={settings.aboutPageLabel} privacyPolicyLabel={settings.privacyPolicyLabel} />
     </>
   );
 }
