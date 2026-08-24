@@ -9,7 +9,9 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSettings();
-  const heroImage = settings.aboutPageImage?.key ? storageUrl(settings.aboutPageImage.key) : undefined;
+  const heroImage = settings.aboutPageImage?.key
+    ? storageUrl(settings.aboutPageImage.key)
+    : settings.heroImage?.key ? storageUrl(settings.heroImage.key) : undefined;
   return {
     title: settings.aboutPageLabel,
     description: `${settings.aboutPageLabel} — ${settings.siteName}.`,
@@ -20,21 +22,29 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function AboutPage() {
   const settings = await getSettings();
+  const imageUrl = settings.aboutPageImage?.key
+    ? storageUrl(settings.aboutPageImage.key)
+    : settings.heroImage?.key ? storageUrl(settings.heroImage.key) : null;
+  const imageAlt = settings.aboutPageImage?.key ? settings.aboutPageLabel : settings.heroImageAlt;
 
   return (
     <>
       <SiteHeader siteName={settings.siteName} />
-      <main className="content-page wrap">
-        <article>
-          <div className="eyebrow">About</div>
-          <h1>{settings.aboutPageLabel}</h1>
-          {settings.aboutPageImage?.key
-            ? <div className="about-page-hero"><Image src={storageUrl(settings.aboutPageImage.key)} alt={settings.aboutPageImageAlt} width={1600} height={700} priority /></div>
-            : null}
-          {settings.aboutPageContent
-            ? <div className="page-copy">{settings.aboutPageContent}</div>
-            : <p className="page-empty">Content will be added by the site owner.</p>}
-        </article>
+      <main className="about-page">
+        <div className="wrap about-page-grid">
+          <article className="about-page-copy">
+            <div className="eyebrow">About</div>
+            <h1>{settings.aboutPageLabel}</h1>
+            {settings.aboutPageContent
+              ? <div className="page-copy">{settings.aboutPageContent}</div>
+              : <p className="page-empty">Content will be added by the site owner.</p>}
+          </article>
+          <div className="about-page-image">
+            {imageUrl
+              ? <Image src={imageUrl} alt={imageAlt} width={900} height={1040} priority />
+              : <div className="about-page-image-placeholder" aria-hidden="true" />}
+          </div>
+        </div>
       </main>
       <SiteFooter siteName={settings.siteName} aboutPageLabel={settings.aboutPageLabel} privacyPolicyLabel={settings.privacyPolicyLabel} />
     </>

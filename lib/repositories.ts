@@ -17,7 +17,6 @@ export const DEFAULT_SETTINGS: SiteSettingsDocument = {
   showFeaturedOverlay: true,
   aboutPageLabel: "About",
   aboutPageContent: "",
-  aboutPageImageAlt: "About page banner",
   privacyPolicyLabel: "Privacy policy",
   privacyPolicyContent: "",
   updatedAt: new Date(0),

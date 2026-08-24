@@ -38,7 +38,6 @@ export const siteSettingsInputSchema = z.object({
   heroImageJson: z.string().max(10_000).optional(),
   aboutPageLabel: z.string().trim().min(2).max(80).default("About"),
   aboutPageContent: z.string().trim().max(50_000).default(""),
-  aboutPageImageAlt: z.string().trim().min(2).max(180).default("About page banner"),
   aboutPageImageJson: z.string().max(10_000).optional(),
   privacyPolicyLabel: z.string().trim().min(2).max(80).default("Privacy policy"),
   privacyPolicyContent: z.string().trim().max(50_000).default(""),

@@ -61,7 +61,6 @@ export interface SiteSettingsDocument {
   aboutPageLabel: string;
   aboutPageContent: string;
   aboutPageImage?: StorageAsset | null;
-  aboutPageImageAlt: string;
   privacyPolicyLabel: string;
   privacyPolicyContent: string;
   updatedAt: Date;
