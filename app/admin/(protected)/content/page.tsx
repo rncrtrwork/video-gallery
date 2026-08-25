@@ -8,9 +8,7 @@ export default async function ContentPage({ searchParams }: { searchParams: Prom
   const published = videos.filter((video) => video.status === "published");
   const errorMessage = error === "hero-image"
     ? "The homepage banner could not be verified. Upload it again and retry."
-    : error === "about-image"
-      ? "The About page image could not be verified. Upload it again and retry."
-      : "Check all required fields and their length limits, then try again.";
+    : "Check all required fields and their length limits, then try again.";
   return (
     <>
       <div className="admin-heading"><div><div className="eyebrow">Site content</div><h1>Pages</h1></div></div>
@@ -29,10 +27,9 @@ export default async function ContentPage({ searchParams }: { searchParams: Prom
         </div></section>
         <section className="admin-panel"><h2>Footer and information pages</h2><p className="subtle">The page names become links in the public footer. Enter plain text; line breaks are preserved. Have the final privacy wording reviewed by a qualified professional.</p><div className="form-grid content-settings-grid">
           <div className="form-group full"><label htmlFor="aboutPageLabel">About page name</label><input className="form-control" id="aboutPageLabel" name="aboutPageLabel" defaultValue={settings.aboutPageLabel} required minLength={2} maxLength={80} /><small>For example: About or About us.</small></div>
-          <div className="form-group full"><BackblazeUpload kind="image" inputName="aboutPageImageJson" initialJson={settings.aboutPageImage ? JSON.stringify({ ...settings.aboutPageImage, url: storageUrl(settings.aboutPageImage.key) }) : ""} label="About page hero image" /></div>
           <div className="form-group full"><label htmlFor="aboutPageContent">About the client</label><textarea className="form-control page-content-input" id="aboutPageContent" name="aboutPageContent" defaultValue={settings.aboutPageContent} maxLength={50000} /></div>
-          {/* <div className="form-group full"><label htmlFor="privacyPolicyLabel">Second page name</label><input className="form-control" id="privacyPolicyLabel" name="privacyPolicyLabel" defaultValue={settings.privacyPolicyLabel} required minLength={2} maxLength={80} /><small>For example: Privacy policy.</small></div> */}
-          {/* <div className="form-group full"><label htmlFor="privacyPolicyContent">Privacy policy text</label><textarea className="form-control page-content-input" id="privacyPolicyContent" name="privacyPolicyContent" defaultValue={settings.privacyPolicyContent} maxLength={50000} /></div> */}
+          <div className="form-group full"><label htmlFor="privacyPolicyLabel">Second page name</label><input className="form-control" id="privacyPolicyLabel" name="privacyPolicyLabel" defaultValue={settings.privacyPolicyLabel} required minLength={2} maxLength={80} /><small>For example: Privacy policy.</small></div>
+          <div className="form-group full"><label htmlFor="privacyPolicyContent">Privacy policy text</label><textarea className="form-control page-content-input" id="privacyPolicyContent" name="privacyPolicyContent" defaultValue={settings.privacyPolicyContent} maxLength={50000} /></div>
         </div></section>
         <div className="form-actions"><button className="btn" type="submit">Save site content</button><span className="subtle">Changes become public immediately.</span></div>
       </form>

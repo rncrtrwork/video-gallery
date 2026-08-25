@@ -60,7 +60,6 @@ export interface SiteSettingsDocument {
   showFeaturedOverlay?: boolean;
   aboutPageLabel: string;
   aboutPageContent: string;
-  aboutPageImage?: StorageAsset | null;
   privacyPolicyLabel: string;
   privacyPolicyContent: string;
   updatedAt: Date;
